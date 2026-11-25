@@ -12,6 +12,7 @@ meeting at all, ever again.
 import os
 
 MAX_CHARS = 200
+MAX_WORDS = 25
 
 # Setup: the hour spent proving the meeting had no point.
 SETUP = "We've spent an hour proving this meeting had no point"
@@ -35,6 +36,11 @@ def validate(text):
         raise ValueError("entry must not be only whitespace")
     if "\n" in text or "\r" in text:
         raise ValueError("entry must be a single line")
+    # One line means one breath: cap the word count so the line stays
+    # short enough to land as a single spoken sentence.
+    if len(text.split()) > MAX_WORDS:
+        raise ValueError(f"entry must be at most {MAX_WORDS} words, "
+                         f"got {len(text.split())}")
     # Exactly one sentence: one terminal period, no other sentence
     # terminators, and it must end the line.
     if text.count(".") != 1 or not text.endswith("."):
